@@ -1,0 +1,7 @@
+# Keep private resume documents and local development files out of GitHub.
+*.pdf
+resume.html
+*Resume*
+*resume*.docx
+node_modules/
+.DS_Store
