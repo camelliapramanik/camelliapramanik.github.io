@@ -5,3 +5,4 @@ resume.html
 *resume*.docx
 node_modules/
 .DS_Store
+!Camellia-Pramanick-Resume.pdf
