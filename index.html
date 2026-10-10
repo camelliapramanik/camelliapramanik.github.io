@@ -18,6 +18,9 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 .project-featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; padding-bottom: 40px; border-bottom: 1px solid var(--line); }
 .project-featured .project-art { height: 100%; min-height: 330px; margin-bottom: 0; }
+.project-media { margin: 0; min-width: 0; }
+.project-video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #102735; border: 1px solid #b8cbd6; }
+.project-media figcaption { margin-top: 12px; font-size: 10px; line-height: 1.6; color: var(--muted); }
 .sales-art { background: #c7d7e1; }
 .sales-visual { position: absolute; inset: 65px 28px; display: flex; flex-direction: column; justify-content: center; gap: 25px; }
 .sales-bars { height: 135px; display: flex; align-items: flex-end; gap: 12px; border-bottom: 1px solid #829aa8; padding: 0 10px; }
@@ -199,11 +202,13 @@
     <div class="section-heading"><h2 id="projects-title">A closer look<br>at <em>the work.</em></h2><p>Selected projects spanning business intelligence, predictive modeling, and relational database design.</p></div>
     <div class="project-grid">
       <article class="project project-featured">
-        <div class="project-art sales-art" aria-hidden="true">
-          <span class="art-label">SALES & CUSTOMER INTELLIGENCE</span>
-          <div class="sales-visual"><div class="sales-bars"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sales-topics"><span>Sales</span><span>Customers</span><span>Products</span><span>Territories</span></div></div>
-          <span class="art-caption">SQL → POWER QUERY → DAX → POWER BI</span>
-        </div>
+        <figure class="project-media">
+          <video class="project-video" muted loop playsinline controls preload="metadata" width="1920" height="1080" poster="media/sales-customer-intelligence-cover.jpg" aria-label="Sales and Customer Intelligence project walkthrough" aria-describedby="sales-video-caption">
+            <source src="media/sales-customer-intelligence.mp4" type="video/mp4">
+            <a href="media/sales-customer-intelligence.mp4">Watch the project walkthrough</a>
+          </video>
+          <figcaption id="sales-video-caption">A 22-second look at the report, customer insights, and SQL-to-Power BI workflow. Music only; no narration.</figcaption>
+        </figure>
         <div class="project-body">
           <div class="project-topline"><span>01 / BUSINESS INTELLIGENCE</span></div>
           <h3>Sales & Customer<br>Intelligence</h3>
@@ -233,6 +238,47 @@ document.querySelectorAll('nav a').forEach(link => {
     link.setAttribute('aria-current', 'location');
   });
 });
+
+// Native controls remain usable even when autoplay is blocked by the browser.
+const projectVideos = [...document.querySelectorAll('.project-video')];
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const visibleVideos = new Set();
+
+function syncProjectVideo(video) {
+  if (!visibleVideos.has(video) || document.hidden) {
+    video.pause();
+    return;
+  }
+  if (reducedMotion.matches) return;
+  video.muted = true;
+  video.play().catch(() => {
+    // Visitors can use the native play button if automatic playback is blocked.
+  });
+}
+
+if ('IntersectionObserver' in window) {
+  const videoObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+        visibleVideos.add(entry.target);
+      } else {
+        visibleVideos.delete(entry.target);
+      }
+      syncProjectVideo(entry.target);
+    });
+  }, { threshold: [0, 0.35] });
+  projectVideos.forEach(video => {
+    video.muted = true;
+    videoObserver.observe(video);
+  });
+  document.addEventListener('visibilitychange', () => projectVideos.forEach(syncProjectVideo));
+  reducedMotion.addEventListener('change', () => {
+    projectVideos.forEach(video => {
+      if (reducedMotion.matches) video.pause();
+      else syncProjectVideo(video);
+    });
+  });
+}
 
 </script>
 </body>
