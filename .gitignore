@@ -6,6 +6,7 @@ resume.html
 node_modules/
 .DS_Store
 !Camellia-Pramanick-Resume.pdf
+!Camellia-Pramanick-Resume-Clickable.pdf
 !projects/sales-customer-intelligence/sales-customer-intelligence.pdf
 !projects/food-redistribution-database/food-redistribution-database.pdf
 !projects/customer-churn-modeling/customer-churn-modeling.pdf
